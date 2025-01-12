@@ -90,7 +90,7 @@ def create_run_stats() -> dict:
 
     # get fastq stats
     with open(f"{OUTDIR}/{SAMPLE}.json", "r") as handle:
-        stats["fastq"] = json.read(handle)["summary"]
+        stats["fastq"] = json.load(handle)["summary"]
 
     # get alignment stats
     with open(f"{OUTDIR}/{SAMPLE}.aln.stats") as handle:
