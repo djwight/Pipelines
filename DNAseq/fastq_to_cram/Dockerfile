@@ -65,9 +65,10 @@ RUN apt-get update && apt-get install -y \
 # add tools to PATH
 RUN export PATH=/tools:${PATH}
 
-WORKDIR /src
+WORKDIR /pipelines
 
 COPY . . 
-RUN pip install -r requirements.txt
+RUN pip install -r DNAseq/fastq_to_cram/requirements.txt
+RUN python3 setup.py install
 
-ENTRYPOINT [ "python3", "pe_fastq_to_cram.py" ]
+ENTRYPOINT [ "python3", "DNAseq/fastq_to_cram/pe_fastq_to_cram.py" ]

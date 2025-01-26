@@ -1,10 +1,13 @@
 import os
 import logging
 from time import time
-from subprocess import Popen, run, PIPE, STDOUT
 import re
 import tomllib
 import json
+
+from modules.logger import init_logger
+from modules.utils import run_cmd, validate_file, return_nice_time
+from modules.stats import create_run_stats
 
 # read the config
 with open(os.path.join("/fastqs/", os.environ.get("RUN_CONFIG")), "rb") as file:
@@ -21,99 +24,7 @@ VERSIONS = {
 }
 os.makedirs((OUTDIR := f"/fastqs/{SAMPLE}_result"), exist_ok=True)
 
-# logging formats
-log_fmt = "%(asctime)s [%(process)d] [%(levelname)s] %(message)s"
-date_fmt = "%Y-%m-%d %H:%M:%S"
-formatter = logging.Formatter(fmt=log_fmt, datefmt=date_fmt)
-
-# logging config
-logging.basicConfig(
-    format=log_fmt,
-    datefmt=date_fmt,
-    level=logging.DEBUG,
-    filename=os.path.join(OUTDIR, "run.log"),
-)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-logging.getLogger().addHandler(stream_handler)
-
-
-def run_cmd(cmd: str, tool: str, log_stdout: bool = False) -> None:
-    """Runs a shell command with pipefail set.
-
-    Args:
-        cmd (str): shell command to run.
-        tool (str): tools being called.
-        log_stdout (bool, optional): if the stdout should also be passed to the logs. Defaults to False.
-    """
-    with Popen(
-        ["/bin/bash", "-c", "set -o pipefail; " + cmd],
-        text=True,
-        stdout=PIPE if log_stdout else None,
-        stderr=STDOUT if log_stdout else PIPE,
-    ) as p:
-        for line in p.stdout if log_stdout else p.stderr:
-            if (line := line.strip()) != "":
-                logging.info(f"({tool}) {line}")
-
-
-def validate_file(fpath: str) -> None:
-    """Validates that the given path leads to legitimate file.
-
-    Args:
-        fpath (str): path to the file.
-    """
-    assert os.path.isfile(fpath), f"'{fpath}' is not a valid file..."
-
-
-def return_nice_time(start: float, mins: bool = False) -> float:
-    """Generated the delta time between now and a start unix time stamp.
-
-    Args:
-        start (float): unix time for the start.
-        mins (bool, optional): if the time should be shown in minutes. Defaults to False.
-
-    Returns:
-        float: minutes or seconds of the time delta.
-    """
-    return round((time() - start) / (60 if mins else 1), 2)
-
-
-def create_run_stats() -> dict:
-    """Creates a summary stats dictionary from the stats files created by the tools used
-
-    Returns:
-        dict: stats obtained from the different bioinformatics tools
-    """
-    stats = {}
-    stats["tools"] = VERSIONS
-
-    # get fastq stats
-    with open(f"{OUTDIR}/{SAMPLE}.json", "r") as handle:
-        stats["fastq"] = json.load(handle)["summary"]
-
-    # get alignment stats
-    with open(f"{OUTDIR}/{SAMPLE}.aln.stats") as handle:
-        tmp_data = [
-            line.rstrip().replace(":", "").split("\t")[:2]
-            for line in handle.readlines()
-        ]
-        stats["alignment"] = {k.replace(" ", "_"): v for k, v in tmp_data}
-
-    # get deduplication stats
-    keep = False
-    tmp_data = []
-    with open(f"{OUTDIR}/{SAMPLE}_dup_metrics.txt", "r") as handle:
-        for line in handle.readlines():
-            if line.startswith("## METRICS CLASS"):
-                keep = True
-                continue
-            elif line.startswith("\n"):
-                keep = False
-            if keep:
-                tmp_data.append(line.rstrip().split("\t"))
-    stats["deduplication"] = {k: v for k, v in list(zip(tmp_data[0], tmp_data[1]))}
-    return stats
+init_logger(outdir=OUTDIR)
 
 
 def runner() -> None:
@@ -205,7 +116,7 @@ def runner() -> None:
     logging.info(f"CRAM created in {return_nice_time(begin, mins=True)}mins")
 
     # write stats file
-    stats = create_run_stats()
+    stats = create_run_stats(tool_versions=VERSIONS, sample=SAMPLE, outdir=OUTDIR)
     with open(f"{OUTDIR}/{SAMPLE}.stats", "w") as file:
         json.dump(stats, file)
 
