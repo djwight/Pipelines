@@ -64,7 +64,6 @@ COPY --from=builder /build /tools
 
 RUN apt-get update && apt-get install -y \
     default-jre
-# r-base
 
 # add tools to PATH
 RUN export PATH=/tools:${PATH}
