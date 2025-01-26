@@ -63,8 +63,8 @@ ENV FQCv=$FQCv FPv=$FPv SAMv=$SAMv KALv=$KALv
 COPY --from=builder /build /tools
 
 RUN apt-get update && apt-get install -y \
-    default-jre \
-    r-base
+    default-jre
+# r-base
 
 # add tools to PATH
 RUN export PATH=/tools:${PATH}
@@ -72,7 +72,7 @@ RUN export PATH=/tools:${PATH}
 WORKDIR /pipelines
 
 COPY . . 
-RUN pip install -r DNAseq/fastq_kallisto_counts/requirements.txt
+RUN pip install -r RNAseq/fastq_kallisto_counts/requirements.txt
 RUN python3 setup.py install
 
 ENTRYPOINT [ "python3", "RNAseq/fastq_kallisto_counts/pe_gene_counts.py" ]

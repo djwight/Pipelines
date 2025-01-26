@@ -3,8 +3,9 @@ threads = 8
 debug = true
 
 [sample]
-FQ1 = "sample_1.fastq"
-FQ2 = "sample_2.fastq"
+name = "sample"
+FQ1 = "sample_R1.fastq"
+FQ2 = "sample_R2.fastq"
 
 [ref]
 index = "transcriptome.fa.idx"

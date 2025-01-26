@@ -1,7 +1,6 @@
 import os
 import logging
 from time import time
-import re
 import tomllib
 import json
 
@@ -12,7 +11,6 @@ from modules.stats import create_rna_pseudo_stats
 # read the config
 with open(os.path.join("/fastqs/", os.environ.get("RUN_CONFIG")), "rb") as file:
     cfg = tomllib.load(file)
-SAMPLE = re.split(r"_\d.", cfg["sample"]["FQ1"])[0]
 
 # tool versions from the docker build
 VERSIONS = {
@@ -21,14 +19,14 @@ VERSIONS = {
     "Samtools": os.environ.get("SAMv"),
     "Kallisto": os.environ.get("KALv"),
 }
-os.makedirs((OUTDIR := f"/fastqs/{SAMPLE}_result"), exist_ok=True)
+os.makedirs((OUTDIR := f"/fastqs/{cfg['sample']['name']}_result"), exist_ok=True)
 
 init_logger(outdir=OUTDIR)
 
 
 def runner() -> None:
     start = time()
-    logging.info(f"Script started for sample = {SAMPLE}")
+    logging.info(f"Script started for sample = {cfg['sample']['name']}")
 
     # log out tool versions used in script
     for tool, version in VERSIONS.items():
@@ -50,10 +48,10 @@ def runner() -> None:
     logging.info(f"FastQC completed in {return_nice_time(begin)}s")
 
     # read trimming
-    fq1_trim_path = "_trim.".join(fq1_path.split("."))
-    fq2_trim_path = "_trim.".join(fq2_path.split("."))
+    fq1_trim_path = "_trim.f".join(fq1_path.split(".f"))
+    fq2_trim_path = "_trim.f".join(fq2_path.split(".f"))
     trim_cmd = (
-        f"/tools/fastp -w {cfg['config']['threads']} --stdout -h {OUTDIR}/{SAMPLE}.html -j {OUTDIR}/{SAMPLE}.json "
+        f"/tools/fastp -w {cfg['config']['threads']} -h {OUTDIR}/{cfg['sample']['name']}.html -j {OUTDIR}/{cfg['sample']['name']}.json "
         f"-i {fq1_path} -I {fq2_path} -o {fq1_trim_path} -O {fq2_trim_path}"
     )
     logging.info(f"Running trimming...")
@@ -62,10 +60,10 @@ def runner() -> None:
         cmd=trim_cmd,
         tool="fastp",
     )
-    logging.info(f"Trimming completed in {return_nice_time(begin)}s")
+    logging.info(f"Trimming completed in {return_nice_time(begin, mins=True)}mins")
 
     # pseudoalignment and transcript counting
-    pseudo_cmd = f"/tools/kallisto quant -t 8 -i {cfg['ref']['index']} -o {OUTDIR} {fq1_trim_path} {fq2_trim_path}"
+    pseudo_cmd = f"/tools/kallisto quant -t 8 -i /genome/{cfg['ref']['index']} -o {OUTDIR} {fq1_trim_path} {fq2_trim_path}"
     logging.info(f"Running trimming...")
     begin = time()
     run_cmd(
@@ -78,9 +76,9 @@ def runner() -> None:
 
     # write stats file
     stats = create_rna_pseudo_stats(
-        tool_versions=VERSIONS, sample=SAMPLE, outdir=OUTDIR
+        tool_versions=VERSIONS, sample=cfg["sample"]["name"], outdir=OUTDIR
     )
-    with open(f"{OUTDIR}/{SAMPLE}.stats", "w") as file:
+    with open(f"{OUTDIR}/{cfg['sample']['name']}.stats", "w") as file:
         json.dump(stats, file)
 
     logging.info(f"Script completed in {return_nice_time(start, mins=True)}mins")
