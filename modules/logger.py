@@ -3,6 +3,11 @@ import logging
 
 
 def init_logger(outdir: str) -> None:
+    """Initializes the logger for the python script.
+
+    Args:
+        outdir (str): path to where the results of the pipeline will be saved
+    """
     # logging formats
     log_fmt = "%(asctime)s [%(process)d] [%(levelname)s] %(message)s"
     date_fmt = "%Y-%m-%d %H:%M:%S"
