@@ -40,7 +40,7 @@ docker build -t dnapipe .
 3. Run the docker container
 ```bash
 docker run \
-    -e RUN_CONFIG=/path/to/config.toml(must be located with FASTQs) \
+    -e RUN_CONFIG=<name of config.toml (must be located with FASTQs)> \
     --mount type=bind,source=/path/to/genome,target=/genome,readonly \
     --mount type=bind,source=/path/to/fastqs,target=/fastqs \
     -it dnapipe

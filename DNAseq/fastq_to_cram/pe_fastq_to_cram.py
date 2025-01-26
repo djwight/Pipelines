@@ -7,7 +7,7 @@ import tomllib
 import json
 
 # read the config
-with open(os.environ.get("RUN_CONFIG"), "rb") as file:
+with open(os.path.join("/fastqs/", os.environ.get("RUN_CONFIG")), "rb") as file:
     cfg = tomllib.load(file)
 SAMPLE = re.split(r"_\d.", cfg["sample"]["FQ1"])[0]
 
@@ -95,7 +95,8 @@ def create_run_stats() -> dict:
     # get alignment stats
     with open(f"{OUTDIR}/{SAMPLE}.aln.stats") as handle:
         tmp_data = [
-            line.rstrip().replace(":", "").split("\t") for line in handle.readlines()
+            line.rstrip().replace(":", "").split("\t")[:2]
+            for line in handle.readlines()
         ]
         stats["alignment"] = {k.replace(" ", "_"): v for k, v in tmp_data}
 
