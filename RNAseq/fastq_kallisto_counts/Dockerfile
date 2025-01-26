@@ -75,4 +75,4 @@ COPY . .
 RUN pip install -r DNAseq/fastq_kallisto_counts/requirements.txt
 RUN python3 setup.py install
 
-ENTRYPOINT [ "top" ]
+ENTRYPOINT [ "python3", "RNAseq/fastq_kallisto_counts/pe_gene_counts.py" ]

@@ -2,7 +2,8 @@ import json
 
 
 def create_dna_run_stats(tool_versions: dict, sample: str, outdir: str) -> dict:
-    """Creates a summary stats dictionary from the stats files created by the tools used
+    """Creates a summary stats dictionary from the stats files created by the tools used in
+    the DNA sequencing pipelines.
 
     Args:
         tool_versions (dict): versions of tools used in the analysis
@@ -44,6 +45,17 @@ def create_dna_run_stats(tool_versions: dict, sample: str, outdir: str) -> dict:
 
 
 def create_rna_pseudo_stats(tool_versions: dict, sample: str, outdir: str) -> dict:
+    """Creates a summary stats dictionary from the stats files created by the tools used in
+    the bullk RNA sequencing pipeline with Kallisto.
+
+    Args:
+        tool_versions (dict): versions of tools used in the analysis
+        sample (str): name of the sample
+        outdir (str): path to the directory for the results
+
+    Returns:
+        dict: stats obtained from the different bioinformatics tools
+    """
     stats = {}
     stats["tools"] = tool_versions
 
