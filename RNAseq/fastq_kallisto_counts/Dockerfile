@@ -1,11 +1,10 @@
-ARG BWAv="0.7.18"
 ARG FQCv="0.12.1"
 ARG FPv="0.24.0"
 ARG SAMv="1.21"
-ARG GATKv="4.6.1.0"
+ARG KALv="0.51.1"
 
 FROM buildpack-deps:bookworm AS builder
-ARG BWAv FQCv FPv SAMv GATKv
+ARG FQCv FPv SAMv KALv
 
 WORKDIR /build
 
@@ -14,22 +13,20 @@ RUN apt-get update && apt-get install -y \
     default-jre \
     gcc \
     make \
+    cmake \
     libbz2-dev \
     zlib1g-dev \
     libncurses5-dev \
     libncursesw5-dev \
     liblzma-dev
 
-# build BWA
-RUN git clone https://github.com/lh3/bwa.git && \
-    cd bwa && \
-    git checkout tags/v${BWAv} -b build && \
-    make
-
-# get FastQC binary (TODO: clean up binary dir)
+# get FastQC binary
 RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${FQCv}.zip && \
     unzip fastqc_v${FQCv}.zip && \
-    rm fastqc_v${FQCv}.zip
+    rm fastqc_v${FQCv}.zip && \
+    mv FastQC/fastqc . && \
+    rm -r FastQC
+
 
 # get fastp binary
 RUN wget http://opengene.org/fastp/fastp.${FPv} && \
@@ -45,22 +42,29 @@ RUN wget https://github.com/samtools/samtools/releases/download/${SAMv}/samtools
     ./configure --prefix=/build/st && \
     make
 
-# get GATK
-RUN wget https://github.com/broadinstitute/gatk/releases/download/${GATKv}/gatk-${GATKv}.zip && \
-    unzip gatk-${GATKv}.zip && \
-    mv gatk-${GATKv} gatk && \
-    rm gatk-${GATKv}.zip
+# build kallisto
+RUN wget https://github.com/pachterlab/kallisto/archive/refs/tags/v${KALv}.zip && \
+    unzip v${KALv}.zip && \ 
+    rm v${KALv}.zip && \
+    cd kallisto-${KALv} && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    mv src/kallisto ../../ && \
+    cd ../.. && \
+    rm -r kallisto-${KALv}
 
 # final image
 FROM python:3.12 AS final
-ARG BWAv FQCv FPv SAMv GATKv
-ENV BWAv=$BWAv FQCv=$FQCv FPv=$FPv SAMv=$SAMv GATKv=$GATKv
+ARG FQCv FPv SAMv KALv
+ENV FQCv=$FQCv FPv=$FPv SAMv=$SAMv KALv=$KALv
 
 COPY --from=builder /build /tools
 
 RUN apt-get update && apt-get install -y \
-    default-jre \
-    r-base
+    default-jre
+# r-base
 
 # add tools to PATH
 RUN export PATH=/tools:${PATH}
@@ -68,7 +72,7 @@ RUN export PATH=/tools:${PATH}
 WORKDIR /pipelines
 
 COPY . . 
-RUN pip install -r DNAseq/fastq_to_cram/requirements.txt
+RUN pip install -r RNAseq/fastq_kallisto_counts/requirements.txt
 RUN python3 setup.py install
 
-ENTRYPOINT [ "python3", "DNAseq/fastq_to_cram/pe_fastq_to_cram.py" ]
+ENTRYPOINT [ "python3", "RNAseq/fastq_kallisto_counts/pe_gene_counts.py" ]

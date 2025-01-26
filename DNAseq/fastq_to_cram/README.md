@@ -6,7 +6,7 @@ This pipeline is set up through docker and runs one sample per docker container.
 
 ## Configuring the Pipeline Run
 
-The pipeline takes parameters from the `run_config.toml` passed to the container at runtime. 
+The pipeline takes parameters from a `run_config.toml` passed to the container at runtime. See `example_config.toml` and below to understand the options available. 
 
 **Note**- this config file should exist in the directory with the FASTQ files, otherwise it will not be available in the running container.
 

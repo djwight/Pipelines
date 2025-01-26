@@ -1,0 +1,18 @@
+[config]
+threads = 8
+debug = true
+
+[sample]
+FQ1 = "sample_R1.fastq"
+FQ2 = "sample_R2.fastq"
+known_sites = ""
+
+[ref]
+reference = "genome.fasta"
+
+[align]
+bwa_options = ""
+bwa_read_group = "@RG\\tID:SRA-RUN\\tSM:sample\\tPL:illumina"
+
+[recal_bq]
+recal = false

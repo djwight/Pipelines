@@ -1,0 +1,11 @@
+[config]
+threads = 8
+debug = true
+
+[sample]
+name = "sample"
+FQ1 = "sample_R1.fastq"
+FQ2 = "sample_R2.fastq"
+
+[ref]
+index = "transcriptome.fa.idx"
