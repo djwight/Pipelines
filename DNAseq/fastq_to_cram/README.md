@@ -32,9 +32,9 @@ recal = <bool:if BQSR should be performed (requires sample/known_sites)>
 ```
 
 ## Running the Pipeline
-1. Build the docker image.
+1. Build the docker image from upper directory (docker context needs access to the modules in `src/`).
 ```bash
-docker build -t dnapipe .
+docker build -t dnapipe -f DNAseq/fastq_to_cram/Dockerfile .
 ```
 2. Create a `run_config.toml` (see [Configuring the Pipeline Run](#configuring-the-pipeline-run)). Ensure the toml file is in the same directory as the FASTQ files. Name can be different as long as it is specified in the `-e` environment variable passed to the container at runtime.
 3. Run the docker container
