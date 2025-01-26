@@ -7,7 +7,7 @@ import json
 
 from modules.logger import init_logger
 from modules.utils import run_cmd, validate_file, return_nice_time
-from modules.stats import create_run_stats
+from modules.stats import create_dna_run_stats
 
 # read the config
 with open(os.path.join("/fastqs/", os.environ.get("RUN_CONFIG")), "rb") as file:
@@ -116,7 +116,7 @@ def runner() -> None:
     logging.info(f"CRAM created in {return_nice_time(begin, mins=True)}mins")
 
     # write stats file
-    stats = create_run_stats(tool_versions=VERSIONS, sample=SAMPLE, outdir=OUTDIR)
+    stats = create_dna_run_stats(tool_versions=VERSIONS, sample=SAMPLE, outdir=OUTDIR)
     with open(f"{OUTDIR}/{SAMPLE}.stats", "w") as file:
         json.dump(stats, file)
 
