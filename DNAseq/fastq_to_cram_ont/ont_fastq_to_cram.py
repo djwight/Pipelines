@@ -1,13 +1,11 @@
 import os
 import logging
 from time import time
-import re
 import tomllib
 import json
 
 from modules.logger import init_logger
 from modules.utils import run_cmd, validate_file, return_nice_time
-from modules.stats import create_dna_run_stats
 
 # read the config
 with open(os.path.join("/fastqs/", os.environ.get("RUN_CONFIG")), "rb") as file:

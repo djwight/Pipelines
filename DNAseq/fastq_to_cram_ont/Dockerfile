@@ -65,14 +65,14 @@ COPY --from=builder /build /tools
 #     default-jre \
 #     r-base
 
-# # add tools to PATH
-# RUN export PATH=/tools:${PATH}
+# add tools to PATH
+RUN export PATH=/tools:${PATH}
 
-# WORKDIR /pipelines
+WORKDIR /pipelines
 
-# COPY . . 
-# RUN pip install -r DNAseq/fastq_to_cram/requirements.txt
-# RUN python3 setup.py install
+COPY . . 
+RUN pip install -r DNAseq/fastq_to_cram_ont/requirements.txt
+RUN python3 setup.py install
 
 ENTRYPOINT [ "top" ]
 #ENTRYPOINT [ "python3", "DNAseq/fastq_to_cram/pe_fastq_to_cram.py" ]
