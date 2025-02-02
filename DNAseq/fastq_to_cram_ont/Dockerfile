@@ -61,10 +61,6 @@ ENV MM2v=$MM2v FQCv=$FQCv FPLNGv=$FPLNGv SAMv=$SAMv GATKv=$GATKv
 
 COPY --from=builder /build /tools
 
-# RUN apt-get update && apt-get install -y \
-#     default-jre \
-#     r-base
-
 # add tools to PATH
 RUN export PATH=/tools:${PATH}
 
@@ -74,5 +70,4 @@ COPY . .
 RUN pip install -r DNAseq/fastq_to_cram_ont/requirements.txt
 RUN python3 setup.py install
 
-ENTRYPOINT [ "top" ]
-#ENTRYPOINT [ "python3", "DNAseq/fastq_to_cram/pe_fastq_to_cram.py" ]
+ENTRYPOINT [ "python3", "DNAseq/fastq_to_cram_ont/ont_fastq_to_cram.py" ]

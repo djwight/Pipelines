@@ -53,7 +53,7 @@ def runner() -> None:
     trim_align_cmd = (
         f"/tools/fastplong -w {cfg['config']['threads']} --stdout -h {OUTDIR}/{SAMPLE}.html -j {OUTDIR}/{SAMPLE}.json "
         f"-l {cfg['fastplong']['min_len']} -m {cfg['fastplong']['mean_qual']} -i {fq_path}  "
-        f"| /tools/minimap2 -ax map-ont -t {cfg['config']['threads']} /genome/{cfg['ref']['reference']} - "
+        f"| /tools/minimap2 -ax map-ont -t {cfg['config']['threads']} /genome/{cfg['ref']['index']} - "
         f"| /tools/st/samtools sort -@ {cfg['config']['threads']} -O bam -T /tmp -o {OUTDIR}/{SAMPLE}.sorted.bam -"
     )
 
@@ -64,6 +64,8 @@ def runner() -> None:
         tool="fastplong|minimap2|samtools sort",
     )
     logging.info(f"Alignment completed in {return_nice_time(begin, mins=True)}mins")
+
+    # TODO: parse and organise the stats and logging
 
 
 if __name__ == "__main__":

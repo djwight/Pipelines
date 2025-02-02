@@ -10,7 +10,7 @@ Pipelines for DNA sequencing and RNA sequencing tasks can be found in the sub-di
 .
 ├── DNAseq
 │   ├── fastq_to_cram
-│   └── fastq_to_cram_longread
+│   └── fastq_to_cram_ont
 ├── modules
 ├── RNAseq
 │   └── fastq_kallisto_counts
