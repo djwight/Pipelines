@@ -1,4 +1,4 @@
-# Fastq to CRAM
+# DNAseq: Fastq to CRAM
 
 Pipeline for alignment of paired-end Illumina short read NGS data to a reference genome from a DNA sequencing experiment. Uses the workhorse BWA-MEM for alignment to a linear reference genome.
 
