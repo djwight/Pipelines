@@ -31,6 +31,26 @@ bwa_read_group = <str:@RG tag to be given to BWA MEM (see docs)>
 recal = <bool:if BQSR should be performed (requires sample/known_sites)>
 ```
 
+## Inputs
+
+The pipeline uses the following inputs to run:
+
+1. 2x FASTQ files (mandatory): from the PE RNA sequencing experiment (names in `run_config.toml`).
+2. Reference genome in fasta (mandatory): defined in the `run_config.toml`.
+3. A BWA index for the genome fasta (mandatory): created using BWA (see below for more info).
+4. Known sites of variants (optional): used for BQSR (see [GATK docs](https://gatk.broadinstitute.org/hc/en-us/articles/360036898312-BaseRecalibrator#--known-sites) for more info).
+
+If (4) is ommitted due to absence of central data on known polymorphic sites, this can be created by using sample-specific high-confidence calls as known sites of variation.
+
+### Making an Index File for the Genome Fasta
+
+An index needs to be created for use with the BWA MEM algorthm. This can be created using the command below. Note that this index file must be located in the same directory as the genome fasta file.
+
+```bash
+bwa index <reference_fasta>
+```
+
+
 ## Running the Pipeline
 1. Build the docker image from upper directory (docker context needs access to the modules in `src/`).
 ```bash
@@ -45,3 +65,7 @@ docker run \
     --mount type=bind,source=/path/to/fastqs,target=/fastqs \
     -it dnapipe
 ```
+
+## Outputs
+
+TODO: add details of the outputs created by the pipeline.
