@@ -1,0 +1,15 @@
+[config]
+threads = 8
+debug = true
+
+[sample]
+name = "sample"
+FQ = "sample_R1.fastq"
+known_sites = ""
+
+[ref]
+reference = "genome.fasta"
+
+[fastplong]
+min_len = 500
+mean_qual = 10
