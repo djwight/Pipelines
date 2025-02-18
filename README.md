@@ -16,3 +16,13 @@ Pipelines for DNA sequencing and RNA sequencing tasks can be found in the sub-di
 │   └── fastq_kallisto_counts
 └── setup.py
 ```
+
+## Tests
+
+Unit tests are run using `pytest` and can be run with the following command in the root directory. 
+
+```bash
+pytest tests
+```
+
+Configuration for the tests can be found in the `.pytest.ini` configuration file. See the [pytest documentation](https://docs.pytest.org/en/stable/reference/customize.html#configuration-file-formats) for more info.
